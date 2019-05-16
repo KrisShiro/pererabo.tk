@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block main %}
+{% if user.is_authenticated %}
+	<div class="alert alert-danger text-center" role="alert">
+  		<h2>Вы уже вошли!</h2>
+	</div>
+{% else %}
+<div class="mt-4 text-center">
+	<!-- FIXME shitty <div class="col-sm-4"> paddings -->
+    <div class="container">
+        <h1>Вход</h1>
+		<form method="post" action="{% url 'login' %}">
+		{% csrf_token %}
+		<div class="form-row">
+            <div class="col-sm-4"></div>
+			<div class="form-group col-sm-4">
+				<div class="input-group">
+					<span class="input-group-addon">
+						<span class="glyphicon glyphicon-user"></span>
+					</span>
+                    {{ form.username }}
+				</div>
+			</div>
+		</div>
+		<div class="form-row">
+            <div class="col-sm-4"></div>
+			<div class="form-group col-sm-4">
+                {{ form.password }}
+			</div>
+		</div>
+		{% if form.errors %}
+			<div class="form-row">
+            <div class="col-sm-4"></div>
+				<div class="form-group col-sm-4">
+					<div class="alert alert-danger" role="alert">
+						{{ form.non_field_errors }}
+					</div>
+				</div>
+			</div>
+		{% endif %}
+            {% if error %}
+                <div class="form-row">
+            <div class="col-sm-4"></div>
+				<div class="form-group col-sm-4">
+					<div class="alert alert-danger" role="alert">
+						{{ error }}
+					</div>
+				</div>
+			</div>
+            {% endif %}
+            <div class="col-sm-4"></div>
+			<button type="submit" class="btn btn-primary">Войти</button>
+		</form>
+	</div>
+</div>
+{% endif %}
+{% endblock %}

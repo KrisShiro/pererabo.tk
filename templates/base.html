@@ -1,0 +1,89 @@
+<html lang="ru">
+    <head>
+        <title>Pererabotka project</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <script src="https://api-maps.yandex.ru/2.1/?apikey=3fbc5b67-9a2c-4014-8c0e-c2a599be086e&lang=ru_RU" type="text/javascript"></script>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+        {% block add_head %}{% endblock %}
+        {% load static %}
+    </head>
+    <body class="d-flex flex-column h-100">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" style="font-size: 120%;">
+            <a class="navbar-brand" href="/">
+                <img src="{% static 'image/logo1.png' %}" height="80rem;">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="infoDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                            <img src="{% static 'image/info.png' %}" width="25px">
+                            Информация
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="infoDropdown">
+                            <a class="dropdown-item" href="#">О переработке</a>
+                            <a class="dropdown-item" href="#">О проекте</a>
+                        </div>
+                    </li>
+                    {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="{% url 'login' %}" class="nav-link">Войти</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'signup' %}" class="nav-link">Стать участником</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Профиль
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                            <a class="dropdown-item" href="{% url 'profile' %}">Личный кабинет</a>
+                            <a class="dropdown-item" href="{% url 'logout' %}">Выйти</a>
+                        </div>
+                    </li>
+                    {% endif %}
+
+                </ul>
+                {% if user.is_authenticated %}
+                <div class="mr-3">
+                    Здравствуй, <b class="">{{ user.username }}</b>
+                </div>
+                {% endif %}
+                {% if request.path == '/' %}
+                <div class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="text" placeholder="Поиск" aria-label="Search" id="search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="button" id="search_button">Искать</button>
+                </div>
+                {% endif %}
+            </div>
+        </nav>
+        <main role="main" class="flex-shrink-0">
+            {% block main %}{% endblock %}
+        </main>
+        <footer class="footer mt-auto py-3 bg-dark">
+            <div class="container">
+                <span class="text-light">
+                    Made by Kristina Shirokikh. 2019. pererabo.tk
+                </span>
+            </div>
+        </footer>
+    </body>
+</html>
+
