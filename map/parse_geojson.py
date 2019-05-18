@@ -25,7 +25,7 @@ def parse(filename):
                 'type': mask[props['marker-color']]
             }
         else:
-            unique_data[coords]['type'] &= mask[props['marker-color']]
+            unique_data[coords]['type'] |= mask[props['marker-color']]
 
     for key in unique_data:
         y,x = key
