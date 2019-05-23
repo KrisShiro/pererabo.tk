@@ -4,8 +4,9 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 
-from .models import Place
-from .forms import LoginForm, SignupForm, MyUserChangeForm, AddPlaceForm
+from .models import Place, Proposal
+from .forms import LoginForm, SignupForm, MyUserChangeForm, AddPlaceForm, AddProposalForm, AnswerProposalForm
+
 
 # Create your views here.
 
@@ -40,6 +41,11 @@ def profile(request):
         return HttpResponseForbidden()
 
     context = {'place_form': AddPlaceForm()}
+    if request.user.is_superuser:
+        context['proposals'] = Proposal.objects.all()
+        context['approve_form'] = AnswerProposalForm()
+    else:
+        context['proposals'] = Proposal.objects.filter(author=request.user)
 
     if request.method == 'GET':
         form = MyUserChangeForm(request.user, instance=request.user)
@@ -112,4 +118,70 @@ def add_place(request):
         if form.cleaned_data['accum']:
             place.type_mask |= Place.ACCUM
         place.save()
+    return HttpResponseRedirect('/profile')
+
+
+def edit_place(request, place_id):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden()
+    current_place = Place.objects.get(id=place_id)
+    context = {}
+    if request.method == 'POST':
+        form = AddPlaceForm(request.POST, instance=current_place)
+        if form.is_valid():
+            place = form.save(commit=False)
+            place.type_mask = 0
+            if form.cleaned_data['plastic']:
+                place.type_mask |= Place.PLAST
+            if form.cleaned_data['paper']:
+                place.type_mask |= Place.PAPER
+            if form.cleaned_data['glass']:
+                place.type_mask |= Place.GLASS
+            if form.cleaned_data['accum']:
+                place.type_mask |= Place.ACCUM
+            place.save()
+            return HttpResponseRedirect('/profile')
+        context['form'] = form
+    else:
+        form = AddPlaceForm(instance=current_place)
+        context['form'] = form
+    return render(request, 'edit_place.html', context)
+
+
+def add_proposal(request):
+    if request.method == 'GET':
+        form = AddProposalForm()
+    else:
+        form = AddProposalForm(request.POST)
+        if form.is_valid():
+            proposal = form.save(commit=False)
+            proposal.author = request.user
+            proposal.status = None
+            proposal.status_explanation = ''
+            proposal.save()
+            return HttpResponseRedirect('/profile')
+    return render(request, 'add_proposal.html', {'form': form})
+
+
+def approve_proposal(request, proposal_id):
+    if not request.user.is_superuser or request.method == 'GET':
+        return HttpResponseForbidden()
+    form = AnswerProposalForm(request.POST)
+    proposal = Proposal.objects.get(id=proposal_id)
+    if form.is_valid():
+        proposal.status = True
+        proposal.status_explanation = form.cleaned_data['explanation']
+        proposal.save()
+    return HttpResponseRedirect('/profile')
+
+
+def disapprove_proposal(request, proposal_id):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden()
+    form = AnswerProposalForm(request.POST)
+    proposal = Proposal.objects.get(id=proposal_id)
+    if form.is_valid():
+        proposal.status = False
+        proposal.status_explanation = form.cleaned_data['explanation']
+        proposal.save()
     return HttpResponseRedirect('/profile')

@@ -1,248 +1,327 @@
 {% extends 'base.html' %}
 
 {% block main %}
-<div class="container mt-4 text-center">
-    <div class="container col-sm-8">
-        <h2> Профиль </h2>
+<div class="mt-4 text-center">
 
-        <div class="btn-group mb-3 mt-2" role="group" aria-label="toggle">
-            <!-- JS based buttons -->
-            <button type="button" class="btn btn-outline-secondary active" id="watch_button">Просмотр</button>
-            <button type="button" class="btn btn-outline-secondary" id="change_button">Изменить</button>
-        </div>
-        <table class="table" style="" id="watch">
-            <tr>
-                <td>Username</td>
-                <td> {{ user.username }}</td>
-            </tr>
-            <tr>
-                <td>E-mail</td>
-                <td> {{ user.email }}</td>
-            </tr>
-            <tr>
-                <td>Имя</td>
-                <td> {{ user.first_name }}</td>
-            </tr>
-            <tr>
-                <td>Фамилия</td>
-                <td> {{ user.last_name }}</td>
-            </tr>
-        </table>
-        <form style="display: none;" id="change" method="post" action="{% url 'profile' %}">
-            {% csrf_token %}
-            <div class="form-group row">
-                <label for="{{ form.username.id_for_label }}" class="col-sm-2 col-form-label"> Username </label>
-                <div class="col-sm-10">
-                    {{ form.username }}
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="{{ form.email.id_for_label }}" class="col-sm-2 col-form-label"> E-mail </label>
-                <div class="col-sm-10">
-                    {{ form.email }}
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="{{ form.first_name.id_for_label }}" class="col-sm-2 col-form-label"> Имя </label>
-                <div class="col-sm-10">
-                    {{ form.first_name }}
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="{{ form.last_name.id_for_label }}" class="col-sm-2 col-form-label"> Фамилия </label>
-                <div class="col-sm-10">
-                    {{ form.last_name }}
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Изменить</button>
-            {% if form.errors %}
-                <div class="alert alert-danger text-center mt-4" role="alert">
-                    {{ form.errors }}
-                </div>
-            {% endif %}
-        </form>
-        <script>
-            $("#watch_button").click(function () {
-                $("#watch").show();
-                $("#change").hide();
-                let cb = $("#change_button");
-                if (cb.hasClass("active")) {
-                    $("#watch_button").addClass("active");
-                    cb.toggleClass("active", "");
-                }
-            });
-            $("#change_button").click(function () {
-                $("#change").show();
-                $("#watch").hide();
-                let wb = $("#watch_button");
-                if (wb.hasClass("active")) {
-                    $("#change_button").addClass("active");
-                    wb.toggleClass("active", "");
-                }
-            });
-        </script>
-    </div>
-    <div class="container col-sm-12 mt-2">
-        {% if user.is_superuser %}
-        <h2>Панель администратора</h2>
-        <h3>Существующие места</h3>
-        <div class="btn-group mb-3 mt-2" role="group" aria-label="first">
-            <!-- JS based buttons -->
-            <button type="button" class="btn btn-outline-info active" id="all_button">Все</button>
-            <button type="button" class="btn btn-outline-danger" id="plastic_button">Пластик</button>
-            <button type="button" class="btn btn-outline-primary" id="paper_button">Бумага</button>
-            <button type="button" class="btn btn-outline-success" id="glass_button">Стекло</button>
-            <button type="button" class="btn btn-outline-dark" id="accum_button">Опасно</button>
-        </div>
-        <form method="POST" action="{% url 'add_place' %}" id="id_form">
-            {% csrf_token %}
-            <table class="table" style="" id="all">
-                <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col" style="width: 35%;">Адрес</th>
-                    <th scope="col">Координаты</th>
-                    <th scope="col">Пластик</th>
-                    <th scope="col">Бумага</th>
-                    <th scope="col">Стекло</th>
-                    <th scope="col">Опасные</th>
-                    <td scope="col" ></td>
-                </tr>
-                </thead>
-
-                {% for place in places %}
-                <tr class="{{ place.css_class }}">
-                    <th scope="row"> {{ place.id }}</th>
-                    <td> {{ place.address }}</td>
-                    <td> ({{ place.coordinate_x }}; {{ place.coordinate_y }})</td>
-                    <td> {% if 'plastic' in place.type %} yes {% else %} no {% endif %}</td>
-                    <td> {% if 'paper' in place.type %} yes {% else %} no {% endif %}</td>
-                    <td> {% if 'glass' in place.type %} yes {% else %} no {% endif %}</td>
-                    <td> {% if 'accum' in place.type %} yes {% else %} no {% endif %}</td>
-                    <td><a href="{% url 'delete_place' place.id %}"><i class="fas fa-trash"></i></a></td>
-                </tr>
-                {% endfor %}
-                <tr>
-                    <td colspan="2"> {{ place_form.address }}</td>
-                    <td>
-                        <div class="form-row">
-                            <div class="col-sm-6">
-                                {{ place_form.coordinate_x }}
-                            </div>
-                            <div class="col-sm-6">
-                                {{ place_form.coordinate_y }}
+        <h2>Личный кабинет</h2>
+    <div class="row container-fluid">
+        <div class="col-lg-12 col-xl-6">
+            <div class="row">
+                <div class="container col-sm-8">
+                    <h3> Информация пользователя </h3>
+                    <div class="btn-group mb-3 mt-2" role="group" aria-label="toggle">
+                        <!-- JS based buttons -->
+                        <button type="button" class="btn btn-outline-secondary active" id="watch_button">Просмотр</button>
+                        <button type="button" class="btn btn-outline-secondary" id="change_button">Изменить</button>
+                    </div>
+                    <table class="table" style="" id="watch">
+                        <tr>
+                            <td>Username</td>
+                            <td> {{ user.username }}</td>
+                        </tr>
+                        <tr>
+                            <td>E-mail</td>
+                            <td> {{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <td>Имя</td>
+                            <td> {{ user.first_name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Фамилия</td>
+                            <td> {{ user.last_name }}</td>
+                        </tr>
+                    </table>
+                    <form style="display: none;" id="change" method="post" action="{% url 'profile' %}">
+                        {% csrf_token %}
+                        <div class="form-group row">
+                            <label for="{{ form.username.id_for_label }}" class="col-sm-2 col-form-label"> Username </label>
+                            <div class="col-sm-10">
+                                {{ form.username }}
                             </div>
                         </div>
-                    </td>
-                    <td class="align-middle"> {{ place_form.plastic }}</td>
-                    <td class="align-middle"> {{ place_form.paper }}</td>
-                    <td class="align-middle"> {{ place_form.glass }}</td>
-                    <td class="align-middle"> {{ place_form.accum }}</td>
-                    <td class="align-middle"> <a id="submit_add"><i class="fas fa-plus-circle"></i></a></td>
+                        <div class="form-group row">
+                            <label for="{{ form.email.id_for_label }}" class="col-sm-2 col-form-label"> E-mail </label>
+                            <div class="col-sm-10">
+                                {{ form.email }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="{{ form.first_name.id_for_label }}" class="col-sm-2 col-form-label"> Имя </label>
+                            <div class="col-sm-10">
+                                {{ form.first_name }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="{{ form.last_name.id_for_label }}" class="col-sm-2 col-form-label"> Фамилия </label>
+                            <div class="col-sm-10">
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Изменить</button>
+                        {% if form.errors %}
+                            <div class="alert alert-danger text-center mt-4" role="alert">
+                                {{ form.errors }}
+                            </div>
+                        {% endif %}
+                    </form>
                     <script>
-                        $("#submit_add").click(function() {
-                            $("#id_form").submit();
-                        })
+                        $("#watch_button").click(function () {
+                            $("#watch").show();
+                            $("#change").hide();
+                            let cb = $("#change_button");
+                            if (cb.hasClass("active")) {
+                                $("#watch_button").addClass("active");
+                                cb.toggleClass("active", "");
+                            }
+                        });
+                        $("#change_button").click(function () {
+                            $("#change").show();
+                            $("#watch").hide();
+                            let wb = $("#watch_button");
+                            if (wb.hasClass("active")) {
+                                $("#change_button").addClass("active");
+                                wb.toggleClass("active", "");
+                            }
+                        });
                     </script>
-                </tr>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                {% if user.is_superuser %}
+                    <h2>Панель администратора</h2>
+                    <h3>Существующие места</h3>
+                    <div class="btn-group mb-3 mt-2" role="group" aria-label="first">
+                        <!-- JS based buttons -->
+                        <button type="button" class="btn btn-outline-info active" id="all_button">Все</button>
+                        <button type="button" class="btn btn-outline-danger" id="plastic_button">Пластик</button>
+                        <button type="button" class="btn btn-outline-primary" id="paper_button">Бумага</button>
+                        <button type="button" class="btn btn-outline-success" id="glass_button">Стекло</button>
+                        <button type="button" class="btn btn-outline-dark" id="accum_button">Опасно</button>
+                    </div>
+                    <form method="POST" action="{% url 'add_place' %}" id="id_form">
+                        {% csrf_token %}
+                        <table class="table" style="" id="all">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col" style="width: 35%;">Адрес</th>
+                                <th scope="col">Координаты</th>
+                                <th scope="col">Пластик</th>
+                                <th scope="col">Бумага</th>
+                                <th scope="col">Стекло</th>
+                                <th scope="col">Опасные</th>
+                                <td scope="col" ></td>
+                                <td scope="col"></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="2"> {{ place_form.address }}</td>
+                                    <td>
+                                        <div class="form-row">
+                                            <div class="col-sm-6">
+                                                {{ place_form.coordinate_x }}
+                                            </div>
+                                            <div class="col-sm-6">
+                                                {{ place_form.coordinate_y }}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle"> {{ place_form.plastic }}</td>
+                                    <td class="align-middle"> {{ place_form.paper }}</td>
+                                    <td class="align-middle"> {{ place_form.glass }}</td>
+                                    <td class="align-middle"> {{ place_form.accum }}</td>
+                                    <td class="align-middle"> <a id="submit_add"><i class="fas fa-plus-circle"></i></a></td>
+                                    <script>
+                                        $("#submit_add").click(function() {
+                                            $("#id_form").submit();
+                                        })
+                                    </script>
+                                </tr>
+                                {% for place in places %}
+                                <tr class="{{ place.css_class }}">
+                                    <th scope="row"> {{ place.id }}</th>
+                                    <td> {{ place.address }}</td>
+                                    <td> ({{ place.coordinate_x }}; {{ place.coordinate_y }})</td>
+                                    <td class="text-center"> {% if 'plastic' in place.type %} ✓ {% else %} ✗ {% endif %}</td>
+                                    <td class="text-center"> {% if 'paper' in place.type %} ✓ {% else %} ✗ {% endif %}</td>
+                                    <td class="text-center"> {% if 'glass' in place.type %} ✓ {% else %} ✗ {% endif %}</td>
+                                    <td class="text-center"> {% if 'accum' in place.type %} ✓ {% else %} ✗ {% endif %}</td>
+                                    <td><a href="{% url 'delete_place' place.id %}"><i class="fas fa-trash"></i></a></td>
+                                    <td><a href="{% url 'edit_place' place.id %}"><i class="fas fa-edit"></i></a></td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </form>
+
+                    <script>
+                        let alb = $("#all_button");
+                        let plb = $("#plastic_button");
+                        let pab = $("#paper_button");
+                        let glb = $("#glass_button");
+                        let acb = $("#accum_button");
+                        let o = [alb, plb, pab, glb, acb];
+
+                        function removeActive() {
+                            for (let i = 0; i < o.length; i++) {
+                                o[i].removeClass("active");
+                            }
+                        }
+
+                        alb.click(function () {
+                            removeActive();
+                            alb.addClass("active");
+
+                            $(".plastic").show();
+                            $(".paper").show();
+                            $(".glass").show();
+                            $(".accum").show();
+                        });
+
+                        plb.click(function () {
+                            removeActive();
+                            plb.addClass("active");
+
+                            $(".paper").hide();
+                            $(".glass").hide();
+                            $(".accum").hide();
+                            $(".plastic").show();
+                        });
+
+                        pab.click(function () {
+                            removeActive();
+                            pab.addClass("active");
+
+                            $(".plastic").hide();
+                            $(".glass").hide();
+                            $(".accum").hide();
+                            $(".paper").show();
+                        });
+
+                        glb.click(function () {
+                            removeActive();
+                            glb.addClass("active");
+
+                            $(".plastic").hide();
+                            $(".paper").hide();
+                            $(".accum").hide();
+                            $(".glass").show();
+                        });
+
+                        acb.click(function () {
+                            removeActive();
+                            acb.addClass("active");
+
+                            $(".plastic").hide();
+                            $(".paper").hide();
+                            $(".glass").hide();
+                            $(".accum").show();
+                        });
+
+                    </script>
+                    <div>
+
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12 col-xl-6">
+            <h3>Заявки</h3>
+            <div class="btn-group mb-3 mt-2" role="group" aria-label="toggle">
+                <!-- JS based buttons -->
+                <button type="button" class="btn btn-outline-secondary active" id="new_proposal_button">Новые</button>
+                <button type="button" class="btn btn-outline-secondary" id="all_proposal_button">Все</button>
+            </div><br>
+            <small class="text-muted"> Нажимайте на элементы чтобы увидеть подробную информацию</small>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">От</th>
+                        <th scope="col">Место</th>
+                        <th scope="col">Суть</th>
+                        <th scope="col">Статус</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- TODO information on hover + status field on hover-->
+                    {% for proposal in proposals %}
+                    <tr class="{% if proposal.status is None %} new {% else %} old {% endif %}">
+                        <th scope="row"> {{ proposal.id }} </th>
+                        <td> {{ proposal.author.username }} </td>
+                        <td> {{ proposal.place.address }} </td>
+                        <td> {{ proposal.text }} </td>
+                        <td> {% if proposal.status is None %} Новое {% elif proposal.status %} Одобрено {% else %} Отклонено {% endif %} </td>
+                        <td>
+                            {% if user.is_superuser %}
+                            <div class="dropdown">
+                                <a href="" role="button" id="approve_link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-thumbs-up"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right p-2 text-muted text-center" aria-labelledby="approve_link" style="width: 28rem;">
+                                    <form action="{% url 'approve_proposal'  proposal.id %}" method="post" class="container mb-0">
+                                        {% csrf_token %}
+                                        <div class="form-group row">
+                                            {{ approve_form.explanation }}
+                                        </div>
+                                        <button class="btn btn-success" type="submit">Подтвердить</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_superuser %}
+                            <div class="dropdown">
+                                <a href="" role="button" id="disapprove_link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-thumbs-down"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right p-2 text-muted text-center" aria-labelledby="disapprove_link" style="width: 28rem;">
+                                    <form action="{% url 'disapprove_proposal'  proposal.id %}" method="post" class="container mb-0">
+                                        {% csrf_token %}
+                                        <div class="form-group row">
+                                            {{ approve_form.explanation }}
+                                        </div>
+                                        <button class="btn btn-danger" type="submit">Подтвердить</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
-        </form>
-
-        <script>
-            let alb = $("#all_button");
-            let plb = $("#plastic_button");
-            let pab = $("#paper_button");
-            let glb = $("#glass_button");
-            let acb = $("#accum_button");
-            let o = [alb, plb, pab, glb, acb];
-
-            function removeActive() {
-                for (let i = 0; i < o.length; i++) {
-                    o[i].removeClass("active");
-                }
-            }
-
-            alb.click(function () {
-                removeActive();
-                alb.addClass("active");
-
-                $(".plastic").show();
-                $(".paper").show();
-                $(".glass").show();
-                $(".accum").show();
-            });
-
-            plb.click(function () {
-                removeActive();
-                plb.addClass("active");
-
-                $(".paper").hide();
-                $(".glass").hide();
-                $(".accum").hide();
-                $(".plastic").show();
-            });
-
-            pab.click(function () {
-                removeActive();
-                pab.addClass("active");
-
-                $(".plastic").hide();
-                $(".glass").hide();
-                $(".accum").hide();
-                $(".paper").show();
-            });
-
-            glb.click(function () {
-                removeActive();
-                glb.addClass("active");
-
-                $(".plastic").hide();
-                $(".paper").hide();
-                $(".accum").hide();
-                $(".glass").show();
-            });
-
-            acb.click(function () {
-                removeActive();
-                acb.addClass("active");
-
-                $(".plastic").hide();
-                $(".paper").hide();
-                $(".glass").hide();
-                $(".accum").show();
-            });
-
-        </script>
-        <div>
-
+            <script>
+                $(".old").hide();
+                $("#new_proposal_button").click(function () {
+                    $(".new").show();
+                    $(".old").hide();
+                    let cb = $("#all_proposal_button");
+                    if (cb.hasClass("active")) {
+                        $("#new_proposal_button").addClass("active");
+                        cb.toggleClass("active", "");
+                    }
+                });
+                $("#all_proposal_button").click(function () {
+                    $(".old").show();
+                    $(".new").show();
+                    let wb = $("#new_proposal_button");
+                    if (wb.hasClass("active")) {
+                        $("#all_proposal_button").addClass("active");
+                        wb.toggleClass("active", "");
+                    }
+                });
+            </script>
+            <a class="btn btn-primary" href="{% url 'add_proposal' %}">Подать заявку</a>
         </div>
-        {% else %}
-        <!-- Потенциальный функционал
-        <h2>Заявки</h2>
-        <div class="btn-group mb-3 mt-2" role="group" aria-label="toggle">
-            <-- JS based buttons
-            <button type="button" class="btn btn-outline-primary active" id="watch_request_button">Просмотр</button>
-            <button type="button" class="btn btn-outline-primary" id="new_request_button">Изменить</button>
-        </div>
-        -->
-        <!-- TODO table of requests and add new request form -->
-        {% endif %}
     </div>
+
 </div>
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

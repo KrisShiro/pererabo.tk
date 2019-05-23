@@ -1,0 +1,42 @@
+{% extends 'any_form.html' %}
+
+{% block form %}
+    <h1>Редактирование места #{{ form.instance.id }}</h1>
+    <form method="post" action="{% url 'edit_place' form.instance.id %}" class="mt-3">
+    {% csrf_token %}
+    <div class="form-group row">
+        <label for="{{ form.address.id_for_label }}" class="col-sm-2 col-form-label">Адрес</label>
+        <div class="col-sm-10">
+            {{ form.address }}
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="{{ form.coordinate_y.id_for_label }}" class="col-sm-2 col-form-label">Координаты</label>
+        <div class="col-sm-5">
+            {{ form.coordinate_x }}
+        </div>
+        <div class="col-sm-5">
+            {{ form.coordinate_y }}
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-3">
+            Пластик
+            {{ form.plastic }}
+        </div>
+        <div class="col-sm-3">
+            Бумага
+            {{ form.paper }}
+        </div>
+        <div class="col-sm-3">
+            Стекло
+            {{ form.glass }}
+        </div>
+        <div class="col-sm-3">
+            Опасное
+            {{ form.accum }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Изменить</button>
+    </form>
+{% endblock %}

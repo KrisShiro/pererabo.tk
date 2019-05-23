@@ -2,8 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 
+from .models import Place, Proposal
 
-from .models import Place
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=15, widget=forms.TextInput(attrs={'class': 'form-control'}), label='Username')
@@ -91,19 +91,20 @@ class AddPlaceForm(forms.ModelForm):
             {'class': 'form-control'})
 
 
+class AddProposalForm(forms.ModelForm):
+    class Meta:
+        model = Proposal
+        fields = ('place', 'text')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['place'].widget.attrs.update(
+            {'class': 'form-control', 'placeholder': 'Место'})
+        self.fields['text'].widget.attrs.update(
+            {'class': 'form-control', 'placeholder': 'Опишите суть'})
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+class AnswerProposalForm(forms.Form):
+    explanation = forms.CharField(max_length=300,
+                                  widget=forms.Textarea(
+                                      attrs={'class': 'form-control', 'placeholder': 'Как Вам?', 'rows': '3'}))

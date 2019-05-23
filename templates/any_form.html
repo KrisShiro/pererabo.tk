@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    <div class="container mt-4 text-center">
+        <div class="container col-sm-8">
+            {% block form %}
+            {% endblock %}
+
+            {% if form.errors %}
+                <div class="form-row">
+                    <div class="form-group col-sm-4">
+                        <div class="alert alert-danger" role="alert">
+                            {{ form.non_field_errors }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if error %}
+                <div class="form-row">
+                    <div class="form-group col-sm-4">
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
