@@ -64,7 +64,7 @@ function init() {
                 {weight: ((places_data[i]['type_mask'] & 8) !== 0) * 25, color: '#ffc107'},
             ],
             balloonContentHeader: 'Пункт #' + places_data[i]['id'],
-            balloonContent: '<strong>Адрес</strong>: ' + places_data[i]['address'],
+            balloonContent: '<strong>Адрес</strong>: ' + places_data[i]['address'] + '<br><small><a href=\"/add_proposal?id=' + places_data[i]['id'] + '\">Предложить изменения</a></small>',
             iconCaption: '',
             iconContent: ''
         }, {

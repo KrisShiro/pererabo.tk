@@ -150,7 +150,9 @@ def edit_place(request, place_id):
 
 def add_proposal(request):
     if request.method == 'GET':
+        place = request.GET.get('id', None)
         form = AddProposalForm()
+        form.fields['place'].initial = place
     else:
         form = AddProposalForm(request.POST)
         if form.is_valid():
